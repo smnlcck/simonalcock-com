@@ -29,9 +29,7 @@
   const TILT = 15;       // degrees the leaving card tips back
 
   const fitsQuery = matchMedia("(min-width: 881px) and (prefers-reduced-motion: no-preference)");
-  let active = false, vh = 0, step = 0, cardH = 0, frame = 0;
-  // Height of the fixed site header; the deck pins just below it.
-  const offset = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0;
+  let active = false, vh = 0, step = 0, cardH = 0, frame = 0, stickTop = 0;
 
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -39,14 +37,20 @@
   function fits() {
     if (!fitsQuery.matches) return false;
     const tallest = Math.max(...cards.map((c) => c.offsetHeight));
-    return tallest + PEEK + 48 <= window.innerHeight - offset();
+    return tallest + PEEK + 48 <= window.innerHeight;
   }
 
   function layout() {
-    vh = window.innerHeight - offset();
+    vh = window.innerHeight;
     step = vh * STEP;
     cardH = Math.max(...cards.map((c) => c.offsetHeight));
-    deck.style.height = `${Math.round(vh + (HOLD_IN + (N - 1) + HOLD_OUT) * step)}px`;
+    // The pinned box is only as tall as the tallest card, centred in the window (the cards
+    // behind peek out below it), so the deck keeps the section's spacing above and below.
+    const boxH = cardH;
+    stickTop = Math.max(0, Math.round((vh - boxH - PEEK) / 2));
+    deck.style.setProperty("--stick-top", `${stickTop}px`);
+    deck.style.setProperty("--stick-h", `${boxH}px`);
+    deck.style.height = `${Math.round(boxH + (HOLD_IN + (N - 1) + HOLD_OUT) * step)}px`;
   }
 
   function setActive(on) {
@@ -55,12 +59,14 @@
     deck.classList.toggle("is-active", on);
     if (on) { layout(); render(); return; }
     deck.style.height = "";
+    deck.style.removeProperty("--stick-top");
+    deck.style.removeProperty("--stick-h");
     cards.forEach((c) => { c.style.transform = ""; c.style.zIndex = ""; });
   }
 
   /** Where the deck is, in cards: 0 with the first in front, N - 1 with the last. */
   function position() {
-    const scrolled = offset() - deck.getBoundingClientRect().top;
+    const scrolled = stickTop - deck.getBoundingClientRect().top;
     const t = clamp(scrolled / step - HOLD_IN, 0, N - 1);
     const i = Math.min(Math.floor(t), N - 2), f = t - i;
     return i + ease(clamp(f / FLIGHT, 0, 1));
@@ -103,7 +109,7 @@
     const k = cards.findIndex((c) => c.contains(e.target));
     if (k < 0) return;
     const top = deck.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({ top: Math.round(top - offset() + (HOLD_IN + k) * step), behavior: "auto" });
+    window.scrollTo({ top: Math.round(top - stickTop + (HOLD_IN + k) * step), behavior: "auto" });
   });
 
   window.addEventListener("scroll", request, { passive: true });

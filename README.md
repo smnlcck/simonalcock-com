@@ -14,7 +14,8 @@ Homepage for simonalcock.com, combining the approved section components into one
 - The header links and Contact button use EudoxusSans.
 - All sections share one column width, so headings line up with the hero text.
 - The hero's fixed 25px frame became a 25px inset around the hero card.
-- The case-studies deck pins below the fixed header (`js/stack-reveal.js` reads `--header-h`).
+- The header is fixed only while the logo travels to its docked position; after that it scrolls off with the page.
+- Sections are 64px apart. The case-studies deck pins a card-sized box centred in the window, so it keeps that spacing.
 - Work tile titles are H3s.
 
 ## Fonts

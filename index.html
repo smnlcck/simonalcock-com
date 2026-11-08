@@ -73,7 +73,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 }
 
 /* Section shell + H2 (notes 1: 50px EudoxusSans-Medium) */
-.section { padding-block: 96px; scroll-margin-top: var(--header-h); }
+.section { padding-top: 64px; }
+.section:last-child { padding-bottom: 64px; }
 .section__inner { display: grid; gap: 40px; }
 .section__title {
   margin: 0;
@@ -84,14 +85,13 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
   text-wrap: balance;
 }
 @media (max-width: 880px) {
-  .section { padding-block: 56px; }
   .section__inner { gap: 24px; }
 }
 @media (max-width: 640px) { .section__title { font-size: 32px; line-height: 40px; } }
 
 /* ================= Header (header-component-1) ================= */
 .bar {
-  position: fixed; inset: 0 0 auto 0; z-index: 10;
+  position: fixed; inset: 0 0 auto 0; z-index: 10;   /* parked (absolute, scrolls away) once docked */
   height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
   padding: env(safe-area-inset-top, 0px) max(var(--pad-x), env(safe-area-inset-right, 0px)) 0 max(var(--pad-x), env(safe-area-inset-left, 0px));
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
@@ -100,6 +100,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
   pointer-events: none;
 }
 .bar > * { pointer-events: auto; }
+.is-parked .bar { position: absolute; top: var(--run, 0px); }
+.is-parked .logo { position: absolute; }
 .logo-slot { width: var(--slot-w, 90px); flex: none; }
 .links {
   flex: 1 1 auto; min-width: 0;
@@ -176,7 +178,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
   min-height: calc(100svh - var(--header-h) - var(--frame));
   background: var(--surface) url("images/simon-alcock-profile-image-wide.jpg") center center / cover no-repeat;
   border-radius: 30px;
-  scroll-margin-top: var(--header-h);
 }
 .hero__col { width: 100%; padding: 32px 16px 96px; }
 @media (min-width: 641px) { .hero__col { width: min(var(--max), 83.3333%); padding: 140px 32px 160px 0; } }
@@ -263,9 +264,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 }
 .deck__cards { display: grid; gap: 32px; }
 .deck.is-active .deck__sticky {
-  position: sticky; top: var(--header-h);
-  height: calc(100vh - var(--header-h)); height: calc(100svh - var(--header-h));
-  display: grid; align-items: center;
+  position: sticky; top: var(--stick-top, 0px);
+  height: var(--stick-h, auto);
+  display: grid; align-items: start;
 }
 .deck.is-active .deck__cards { gap: 0; }
 .deck.is-active .case {
@@ -602,7 +603,12 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
     let p = clamp(window.scrollY / geo.run, 0, 1);
     if (reduce.matches) p = p > 0.35 ? 1 : 0;
     const e = ease(p);
-    logo.style.transform = `translate3d(${lerp(geo.hx, geo.dx, e)}px, ${lerp(geo.hy, geo.dy, e)}px, 0) scale(${lerp(1, S, e)})`;
+    // Once docked, the bar and logo stop being fixed and scroll off with the page
+    const parked = window.scrollY >= geo.run;
+    root.classList.toggle('is-parked', parked);
+    root.style.setProperty('--run', geo.run + 'px');
+    const y = parked ? geo.run + geo.dy : lerp(geo.hy, geo.dy, e);
+    logo.style.transform = `translate3d(${lerp(geo.hx, geo.dx, e)}px, ${y}px, 0) scale(${lerp(1, S, e)})`;
     const ui = clamp((p - 0.7) / 0.3, 0, 1);
     const fill = clamp((p - 0.85) / 0.15, 0, 1);
     bar.style.setProperty('--ui', ui.toFixed(3));
