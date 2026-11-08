@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>simonalcock.com</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Simon Alcock, Product Designer in Dublin: case studies, work and learning.">
+<style>
+/* Licensed fonts, loaded from simonalcock.ie (not stored in this repo) */
+@font-face { font-family: "EudoxusSans-Medium"; src: url("https://simonalcock.ie/wp-content/uploads/custom_fonts/EudoxusSans-Medium.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "AeonikFono-Regular"; src: url("https://simonalcock.ie/wp-content/uploads/custom_fonts/AeonikFono-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+
+/* Layout: full-screen logo stage → logo docks into an 80px fixed bar; hero card with role tabs;
+   then Case studies (scroll-stack deck), Work (masonry-free 3/2/1 grid) and Learning, each under
+   a 50px Eudoxus H2 on one shared column that lines up with the hero's text. Light-only by design. */
+:root {
+  color-scheme: light;
+  --page: #f4f4f6;            /* page ground (was the hero frame colour) */
+  --surface: #ffffff;         /* cards */
+  --title: #333333;           /* headings, primary text */
+  --muted: #666666;           /* labels, secondary text */
+  --text: rgb(80, 80, 80);    /* body copy */
+  --ink: #1f1f1f;             /* hover/pressed */
+  --rule: #e6e6e6;
+  --tab-bg: #f7f7f7; --tab-bg-hover: #f0f0f0;
+  --overlay: rgba(255, 255, 255, .85);
+  --ink-40: rgba(31, 31, 31, .4); --ink-80: rgba(31, 31, 31, .8);
+  --code-text: #0a0a0a; --code-bg: #e6e6e6; --code-border: #cacaca;
+  --important: #65affe;
+
+  --font-display: "EudoxusSans-Medium", Helvetica, Arial, sans-serif;
+  --font-body: Helvetica, "system-ui", -apple-system, Roboto, "Lucida Sans", sans-serif;
+  --font-fono: "AeonikFono-Regular", "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-mono: Consolas, "Liberation Mono", Courier, monospace;
+  --ease-theme: cubic-bezier(0.37, 0.31, 0.2, 0.85);
+
+  --header-h: 80px;
+  --pad-x: 64px;              /* header side padding */
+  --frame: 25px;              /* inset around the hero card */
+  --max: 1160px;
+}
+@media (max-width: 760px) { :root { --pad-x: 20px; } }
+@media (max-width: 640px) { :root { --frame: 0px; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px; line-height: 1.4; letter-spacing: 0.24px;
+  -webkit-font-smoothing: antialiased;
+}
+a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline-offset: 4px; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* Shared column: same width as the hero's text column at every size */
+.wrap {
+  width: min(var(--max), calc((100% - 2 * var(--frame)) * 0.83333));
+  margin-inline: auto;
+}
+@media (max-width: 640px) {
+  .wrap {
+    width: 100%;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* Section shell + H2 (notes 1: 50px EudoxusSans-Medium) */
+.section { padding-block: 96px; scroll-margin-top: var(--header-h); }
+.section__inner { display: grid; gap: 40px; }
+.section__title {
+  margin: 0;
+  color: var(--title);
+  /* Eudoxus file is the Medium cut, registered at 400 — keep 400 to avoid faux bold */
+  font: 400 50px/60px var(--font-display);
+  letter-spacing: normal;
+  text-wrap: balance;
+}
+@media (max-width: 880px) {
+  .section { padding-block: 56px; }
+  .section__inner { gap: 24px; }
+}
+@media (max-width: 640px) { .section__title { font-size: 32px; line-height: 40px; } }
+
+/* ================= Header (header-component-1) ================= */
+.bar {
+  position: fixed; inset: 0 0 auto 0; z-index: 10;
+  height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) max(var(--pad-x), env(safe-area-inset-right, 0px)) 0 max(var(--pad-x), env(safe-area-inset-left, 0px));
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  background: color-mix(in srgb, var(--page) calc(var(--bar, 0) * 100%), transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--rule) calc(var(--bar, 0) * 100%), transparent);
+  pointer-events: none;
+}
+.bar > * { pointer-events: auto; }
+.logo-slot { width: var(--slot-w, 90px); flex: none; }
+.links {
+  flex: 1 1 auto; min-width: 0;
+  display: flex; justify-content: center; gap: 48px;
+  list-style: none; margin: 0; padding: 0 24px;
+}
+.links a, .contact {
+  opacity: var(--ui, 0);
+  transform: translateY(calc((1 - var(--ui, 0)) * -8px));
+}
+/* Note 2: header links in EudoxusSans */
+.links a {
+  color: var(--title); text-decoration: none; white-space: nowrap;
+  font: 400 18px/1.2 var(--font-display); letter-spacing: -0.14px;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  padding-bottom: 2px; transition: background-size .25s ease;
+}
+.links a:hover, .links a:focus-visible { background-size: 100% 1px; }
+/* Note 2: button label in EudoxusSans, matching the case-study buttons */
+.contact {
+  flex: none; display: inline-flex; align-items: center;
+  padding: 12px 24px; border-radius: 999px;
+  background: var(--title); color: #ffffff;
+  font: 400 16px/20px var(--font-display); letter-spacing: -0.14px;
+  text-decoration: none;
+  transition: background-color 250ms cubic-bezier(.32, .72, 0, 1);
+}
+.contact:hover { background: var(--ink); }
+.contact:focus-visible { border-radius: 999px; }
+.bar[data-docked="false"] .links a,
+.bar[data-docked="false"] .contact { visibility: hidden; }
+
+.logo {
+  position: fixed; top: 0; left: 0; z-index: 11;
+  font: 400 64px/1 var(--font-fono); letter-spacing: -0.01em;
+  color: var(--title); text-decoration: none; white-space: nowrap;
+  transform-origin: 0 0; will-change: transform;
+}
+
+.stage { height: 100vh; height: 100svh; position: relative; }
+.prompt {
+  position: absolute; left: 50%; bottom: max(32px, env(safe-area-inset-bottom, 0px));
+  translate: -50% calc(var(--p, 0) * 24px);
+  opacity: calc(1 - var(--p, 0) * 6);
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  background: none; border: 0; cursor: pointer; color: var(--muted);
+  font: 400 12px/1 var(--font-fono); letter-spacing: .14em; text-transform: uppercase;
+}
+.prompt .wheel {
+  width: 22px; height: 34px; border: 1.5px solid currentColor; border-radius: 12px;
+  display: flex; justify-content: center; padding-top: 6px;
+}
+.prompt .wheel::before {
+  content: ""; width: 3px; height: 7px; border-radius: 2px; background: currentColor;
+  animation: wheel-drop 1.8s cubic-bezier(.65,0,.35,1) infinite;
+}
+@keyframes wheel-drop {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  70% { transform: translateY(10px); opacity: 0; }
+  100% { opacity: 0; }
+}
+@media (max-width: 760px) {
+  .links { display: none; }
+  .contact { padding: 10px 18px; font-size: 15px; }
+}
+
+/* ================= Hero (hero-existing) ================= */
+.hero {
+  position: relative;
+  display: flex; justify-content: center; align-items: flex-start;
+  margin-inline: var(--frame);
+  min-height: calc(100vh - var(--header-h) - var(--frame));
+  min-height: calc(100svh - var(--header-h) - var(--frame));
+  background: var(--surface) url("images/simon-alcock-profile-image-wide.jpg") center center / cover no-repeat;
+  border-radius: 30px;
+  scroll-margin-top: var(--header-h);
+}
+.hero__col { width: 100%; padding: 32px 16px 96px; }
+@media (min-width: 641px) { .hero__col { width: min(var(--max), 83.3333%); padding: 140px 32px 160px 0; } }
+@media (prefers-reduced-motion: no-preference) {
+  .hero__col { animation: rise 1s var(--ease-theme) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+}
+.tabs { position: relative; z-index: 3; margin: 0 0 32px; }
+.tabs__list { display: flex; flex-wrap: wrap; list-style: none; margin: -4px; padding: 0; }
+.tabs__item { margin: 4px; }
+.tab {
+  display: block; padding: 14px 20px;
+  border: 3px solid transparent; border-radius: 5px;
+  background: var(--tab-bg); color: var(--muted);
+  font: 400 14px/14px var(--font-display); letter-spacing: -0.14px;
+  cursor: pointer;
+  transition: background .2s ease-in-out, color .2s ease-in-out, border .2s ease-in-out;
+}
+.tab:hover, .tab:focus { background: var(--tab-bg-hover); outline: none; }
+.tab:focus-visible { border-color: var(--ink-40); }
+.tab[aria-selected="true"] { background: var(--surface); cursor: default; }
+.panel { padding: 14px 0; overflow: hidden; min-height: 10px; }
+.panel h1, .panel .css {
+  margin: 0; color: var(--title);
+  font-family: var(--font-display); font-size: 50px; line-height: 60px; font-weight: 400;
+}
+.panel .important { color: var(--important); font-family: var(--font-fono); }
+.panel .selector { color: var(--important); }
+.panel .css > span { display: block; }
+.panel .css .decl { padding-left: 1.2em; }
+@media (max-width: 640px) { .panel h1, .panel .css { font-size: 32px; line-height: 40px; } }
+.hero__mouse {
+  position: absolute; z-index: 5; left: 50%; bottom: 15px;
+  width: 30px; height: 50px; margin-left: -15px; padding: 0;
+  border: 2px solid var(--ink-40); border-radius: 14px; background: none;
+  cursor: pointer; transform: scale(.75);
+  transition: all .25s var(--ease-theme);
+}
+@media (min-width: 641px) { .hero__mouse { bottom: 56px; transform: scale(1); } }
+.hero__mouse:hover, .hero__mouse:focus-visible { border-color: var(--ink-80); outline: none; }
+.hero__mouse span {
+  position: absolute; top: 8px; left: 12px;
+  width: 2px; height: 4px; border-radius: 4px; background: var(--ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero__mouse span { animation: wheel-grow 2s ease infinite; }
+  @keyframes wheel-grow { 0%, 100% { height: 5px; } 50% { height: 24px; } }
+}
+
+/* ================= Case studies ================= */
+.case {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px; padding: 44px;
+  background: var(--surface); border-radius: 28px;
+}
+.case__copy { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; min-width: 0; }
+.case__eyebrow { margin: 0; color: var(--muted); font: 400 14px/1.4 var(--font-display); letter-spacing: -0.14px; }
+.case__title { margin: -4px 0 0; color: var(--title); font: 400 26px/34px var(--font-display); text-wrap: balance; }
+.case__body p { margin: 0; text-wrap: pretty; }
+.case__body p + p { margin-top: 20px; }
+.case__body strong { color: var(--title); font-weight: 700; }
+.case__body a { color: var(--title); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.case__body a:hover { text-decoration-thickness: 2px; }
+.case__button {
+  margin-top: 12px; display: inline-flex; align-items: center;
+  padding: 18px 38px; border-radius: 999px;
+  background: var(--title); color: #ffffff;
+  font: 400 16px/1.2 var(--font-display); letter-spacing: -0.14px;
+  text-decoration: none;
+  transition: background-color 250ms cubic-bezier(.32, .72, 0, 1);
+}
+.case__button:hover { background: var(--ink); }
+.case__button:focus-visible { border-radius: 999px; }
+.case__panel {
+  position: relative; align-self: center; aspect-ratio: 4 / 3; max-width: 100%;
+  border-radius: 24px; background: var(--surface); overflow: hidden; container-type: size;
+}
+.case__stage {
+  position: absolute;
+  width: calc(100cqw * var(--z, 1)); aspect-ratio: 5 / 4;
+  left: calc(50cqw - 100cqw * var(--z, 1) * var(--fx, 200) / 400);
+  top: calc(50cqh - 80cqw * var(--z, 1) * var(--fy, 160) / 320);
+  --hairline-plate: var(--surface);
+}
+.deck__cards { display: grid; gap: 32px; }
+.deck.is-active .deck__sticky {
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h)); height: calc(100svh - var(--header-h));
+  display: grid; align-items: center;
+}
+.deck.is-active .deck__cards { gap: 0; }
+.deck.is-active .case {
+  grid-area: 1 / 1; transform-origin: 50% 100%;
+  will-change: transform; backface-visibility: hidden;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.035), 0 1px 2px rgb(0 0 0 / 0.04), 0 24px 48px -24px rgb(0 0 0 / 0.16);
+}
+@media (max-width: 880px) {
+  .deck__cards { gap: 20px; }
+  .case { grid-template-columns: minmax(0, 1fr); padding: 24px; gap: 24px; border-radius: 22px; }
+  .case__title { font-size: 23px; line-height: 30px; }
+  .case__panel { border-radius: 16px; }
+  .case__button { padding: 16px 32px; }
+}
+
+/* ================= Work (works-existing) ================= */
+.work__card { background: var(--surface); border-radius: 30px; padding-block: 24px; overflow: hidden; }
+.grid { display: grid; grid-template-columns: 1fr; list-style: none; margin: 0; padding: 0; }
+@media (min-width: 641px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1025px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+.tile { position: relative; aspect-ratio: 5 / 4; max-width: 100%; overflow: hidden; }
+.tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.tile a {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 30px; text-align: center; text-decoration: none; color: var(--ink);
+  background: var(--overlay); opacity: 0;
+  transition: opacity .25s var(--ease-theme) .25s; outline: none;
+}
+.tile h3 { margin: 0 0 5px; overflow: hidden; font: 400 28px/36.4px var(--font-display); color: var(--ink); text-wrap: balance; }
+.tile .cats { margin: 0; overflow: hidden; font: 400 11px/15.4px var(--font-body); letter-spacing: 0.24px; text-transform: uppercase; }
+.tile h3 span, .tile .cats span { display: block; transform: translateY(100%); transition: transform .25s var(--ease-theme) .25s; }
+.tile:hover a, .tile a:focus-visible { opacity: 1; transition-delay: 0s; }
+.tile:hover h3 span, .tile a:focus-visible h3 span { transform: none; transition-delay: .1s; }
+.tile:hover .cats span, .tile a:focus-visible .cats span { transform: none; transition-delay: .2s; }
+.tile a:focus-visible { box-shadow: inset 0 0 0 3px var(--ink-40); }
+@media (hover: none) {
+  .tile a { opacity: 1; inset: auto 0 0 0; padding: 14px 20px; }
+  .tile h3 { font-size: 20px; line-height: 26px; }
+  .tile h3 span, .tile .cats span { transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .js .tile.rise { opacity: 0; transform: translateY(30px); transition: opacity .8s var(--ease-theme), transform .8s var(--ease-theme); }
+  .js .tile.rise.in { opacity: 1; transform: none; }
+}
+
+/* ================= Learning (learning-existing) ================= */
+.learning__card { padding: 44px; background: var(--surface); border-radius: 28px; }
+.learning__list { list-style: none; margin: 0; padding: 0; }
+.learning__item { display: flex; align-items: center; gap: 32px; padding: 20px 0; border-top: 1px solid var(--rule); }
+.learning__item:first-child { padding-top: 0; border-top: 0; }
+.learning__item:last-child { padding-bottom: 0; }
+.learning__logo { flex: 0 0 72px; width: 72px; height: 72px; display: grid; place-items: center; }
+.learning__logo img { width: 72px; height: 72px; object-fit: contain; filter: grayscale(1); }
+.learning__text { min-width: 0; }
+.learning__title { margin: 0 0 6px; font: 400 22px/30px var(--font-display); color: var(--title); }
+.learning__year { color: var(--muted); }
+.learning__institution { margin: 0; font-size: 16px; line-height: 1.4; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .js .learning__item {
+    opacity: 0; transform: translate3d(0, 28px, 0);
+    transition: opacity 720ms cubic-bezier(0.22, 1, 0.36, 1), transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--i, 0) * 90ms);
+  }
+  .js .learning__list.is-visible .learning__item { opacity: 1; transform: none; }
+  .js .learning__logo img {
+    transform: translate3d(0, 8px, 0) scale(0.94);
+    transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--i, 0) * 90ms + 80ms);
+  }
+  .js .learning__list.is-visible .learning__logo img { transform: none; }
+}
+@media (max-width: 880px) { .learning__card { padding: 24px; border-radius: 22px; } }
+@media (max-width: 480px) {
+  .learning__item { gap: 24px; align-items: flex-start; }
+  .learning__logo, .learning__logo img { flex-basis: 56px; width: 56px; height: 56px; }
+  .learning__title { font-size: 18px; line-height: 24px; }
+  .learning__institution { font-size: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .prompt .wheel::before { animation: none; }
+  .tile a, .tile h3 span, .tile .cats span, .case__button, .contact { transition: none; }
+}
+</style>
+</head>
+<body>
+<header class="bar" id="bar" data-docked="false">
+  <div class="logo-slot" aria-hidden="true"></div>
+  <nav aria-label="Main">
+    <ul class="links">
+      <li><a href="#top">home</a></li>
+      <li><a href="#about">about</a></li>
+      <li><a href="#case-studies">case studies</a></li>
+      <li><a href="#work">work</a></li>
+    </ul>
+  </nav>
+  <a class="contact" href="https://simonalcock.ie/contact/">Contact</a>
+</header>
+
+<a class="logo" id="logo" href="#top" aria-label="Simon Alcock, home">.simon</a>
+
+<section class="stage" id="top" aria-label="Intro">
+  <button class="prompt" id="prompt" type="button" aria-label="Scroll to content">
+    <span class="wheel" aria-hidden="true"></span>
+    Scroll
+  </button>
+</section>
+
+<main>
+<section class="hero" id="about" aria-label="Introduction">
+  <div class="hero__col">
+    <div class="tabs">
+      <ul class="tabs__list" role="tablist" aria-label="Who is this for?">
+        <li class="tabs__item" role="presentation"><button class="tab" role="tab" id="tab-everyone" aria-controls="everyone" aria-selected="true">For everyone</button></li>
+        <li class="tabs__item" role="presentation"><button class="tab" role="tab" id="tab-leaders" aria-controls="leaders" aria-selected="false" tabindex="-1">For Design Leaders</button></li>
+        <li class="tabs__item" role="presentation"><button class="tab" role="tab" id="tab-designers" aria-controls="designers" aria-selected="false" tabindex="-1">For UX &amp; Product Designers</button></li>
+        <li class="tabs__item" role="presentation"><button class="tab" role="tab" id="tab-managers" aria-controls="managers" aria-selected="false" tabindex="-1">For Product Managers</button></li>
+        <li class="tabs__item" role="presentation"><button class="tab" role="tab" id="tab-developers" aria-controls="developers" aria-selected="false" tabindex="-1">For Developers</button></li>
+      </ul>
+    </div>
+    <div class="panel" role="tabpanel" id="everyone" aria-labelledby="tab-everyone">
+      <h1>I’m a Product Designer from Dublin with over 12 years experience and a background in financial services, brand, web &amp; graphic design. Now specialising in conversion optimisation, accessibility compliance and governance of a visual &amp; behavioural consistency.</h1>
+    </div>
+    <div class="panel" role="tabpanel" id="leaders" aria-labelledby="tab-leaders" hidden>
+      <h1>I’m a results-driven designer who can identify, define and visualise innovation opportunities. I believe in the power of quality and collaborate with subject matter experts and decision-makers to ensure digital products meet business goals.</h1>
+    </div>
+    <div class="panel" role="tabpanel" id="designers" aria-labelledby="tab-designers" hidden>
+      <h1>I’m a naturally divergent thinker and creative problem solver who can craft innovative solutions. From process to pixels, I’ll collaborate with you, learn from you and help make something we can be proud of.</h1>
+    </div>
+    <div class="panel" role="tabpanel" id="managers" aria-labelledby="tab-managers" hidden>
+      <h1>I bring end-to-end product experience, from vision and strategy to discovery, design and delivery. I’ll partner closely with you to create the highest impact possible.</h1>
+    </div>
+    <div class="panel" role="tabpanel" id="developers" aria-labelledby="tab-developers" hidden>
+      <p class="css" aria-label="A CSS rule for Simon: role designer, engineer false, code claude, collaboration strong, results delivered, important.">
+        <span aria-hidden="true"><span class="selector">.simon</span> {</span>
+        <span class="decl" aria-hidden="true">role: designer;</span>
+        <span class="decl" aria-hidden="true">engineer: false;</span>
+        <span class="decl" aria-hidden="true">code: claude;</span>
+        <span class="decl" aria-hidden="true">collaboration: strong;</span>
+        <span class="decl" aria-hidden="true">results: delivered <span class="important">!important</span>;</span>
+        <span aria-hidden="true">}</span>
+      </p>
+    </div>
+  </div>
+  <button class="hero__mouse" id="hero-mouse" type="button" aria-label="Scroll to case studies"><span></span></button>
+</section>
+
+<section class="section" id="case-studies" aria-labelledby="case-studies-title">
+  <div class="wrap section__inner">
+    <h2 class="section__title" id="case-studies-title">Case studies</h2>
+    <div class="deck" data-stack-reveal>
+      <div class="deck__sticky">
+        <div class="deck__cards">
+<article class="case">
+      <div class="case__copy">
+        <p class="case__eyebrow">Case Study - Product design</p>
+        <h3 class="case__title">Redesigning the Aer Lingus booking flow</h3>
+        <div class="case__body">
+          <p>I’ve worked as a Product Designer at Aer Lingus since 2016. In that time I’ve delivered a broad range of large projects including full redesigns for rebrand, accessibility compliance and responsive web projects, as well as ongoing optimisation and BAU work.</p>
+          <p>I redesigned all 7 steps of the booking flow for the Aer Lingus website which takes <strong>over 3 million bookings annually and generates over 65% of business revenue.</strong></p>
+        </div>
+        <a class="case__button" href="https://simonalcock.ie/aer-lingus-booking-flow/">View Case Study<span class="sr-only">: Redesigning the Aer Lingus booking flow</span></a>
+      </div>
+      <div class="case__panel">
+        <div class="case__stage" data-figure="flights" data-hairline-theme="light" style="--z: 1.13; --fx: 200; --fy: 176" role="img"
+             aria-label="Isometric line drawing of a flight results page. A cursor moves over the fares, and the fare it points at lifts out of its card."></div>
+      </div>
+    </article>
+
+    <article class="case">
+      <div class="case__copy">
+        <p class="case__eyebrow">Case study - Designing for growth</p>
+        <h3 class="case__title">How my conversion optimisation projects increased revenue by €57 million</h3>
+        <div class="case__body">
+          <p>By understanding customer journeys and combining behavioural economics principles with design best practices, it is possible to dramatically improve conversion rates by shaping customers decision-making pathways.</p>
+          <p>My creative concepts for conversion optimisation projects have generated <strong>over €57 million of recurring additional revenue</strong>.</p>
+        </div>
+        <a class="case__button" href="https://simonalcock.ie/conversion-designer/">View Case Study<span class="sr-only">: How my conversion optimisation projects increased revenue by €57 million</span></a>
+      </div>
+      <div class="case__panel">
+        <div class="case__stage" data-figure="phone" data-hairline-theme="light" style="--z: 1.18; --fx: 194.8; --fy: 171.2" role="img"
+             aria-label="Isometric line drawing of three test screens, labelled Test 1, Test 2 and Test 3, stacked above a control phone. They close down into a single phone as the labels fade."></div>
+      </div>
+    </article>
+
+    <article class="case">
+      <div class="case__copy">
+        <p class="case__eyebrow">Case study - Designing for web accessibility</p>
+        <h3 class="case__title">Complying with U.S. accessibility legislation</h3>
+        <div class="case__body">
+          <p>U.S. accessibility legislation pre-dates the E.U. equivalent by almost 20 years. As an airline that travels to and from the United States, Aer Lingus has had to comply with <a href="https://www.transportation.gov/web-policies/508-compliance">U.S. Department of Transport accessibility standards</a> since 2017.</p>
+          <p>I’ve worked extensively on bringing design standards into compliance with <strong>W3C/WCAG accessibility standards since 2017</strong>.</p>
+        </div>
+        <a class="case__button" href="https://simonalcock.ie/accessibility-design/">View Case Study<span class="sr-only">: Complying with U.S. accessibility legislation</span></a>
+      </div>
+      <div class="case__panel">
+        <div class="case__stage" data-figure="accessibility" data-hairline-theme="light" style="--z: 1.07; --fx: 200; --fy: 152.6" role="img"
+             aria-label="Isometric line drawing of the accessibility symbol as a medallion on a turntable, inside a design-tool selection box that resizes as it spins."></div>
+      </div>
+    </article>
+
+    <article class="case">
+      <div class="case__copy">
+        <p class="case__eyebrow">Case study - Brand refresh, redesign and development</p>
+        <h3 class="case__title">Rebuilding Bohemian FC’s web presence</h3>
+        <div class="case__body">
+          <p>Founded in 1890, Bohemian FC are the oldest football club in continuous existence in Ireland. During the financial crisis, Bohemians almost went out of business and needed to rely on the goodwill of volunteers, supporters and community members to survive.</p>
+          <p>I completely rebuilt The Bohemian FC web presence on a voluntary basis, helping the club to now boast <strong>the highest commercial/merchandise income in the League of Ireland.</strong></p>
+        </div>
+        <a class="case__button" href="https://simonalcock.ie/portfolio/bohemianfc/">View Case Study<span class="sr-only">: Rebuilding Bohemian FC’s web presence</span></a>
+      </div>
+      <div class="case__panel">
+        <div class="case__stage" data-figure="bohs" data-hairline-theme="light" style="--z: 1; --fx: 195.8; --fy: 165.4" role="img"
+             aria-label="The Bohemian Football Club crest and wordmark, drawn in outline, turning from an isometric view to face the viewer."></div>
+      </div>
+    </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="work" aria-labelledby="work-title">
+  <div class="wrap section__inner">
+    <h2 class="section__title" id="work-title">Work</h2>
+    <div class="work__card">
+<ul class="grid">
+        <li class="tile"><img src="images/flight-search.png" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/flight_search/"><h3><span>Aer Lingus Flight Search</span></h3><p class="cats"><span>Product Design, UX</span></p></a></li>
+        <li class="tile"><img src="images/two-factor.gif" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/two-factor-authentication/"><h3><span>Aer Lingus Two-Factor Authentication</span></h3><p class="cats"><span>UI Design, UX</span></p></a></li>
+        <li class="tile"><img src="images/confirmation-email.png" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/booking-confirmation-email/"><h3><span>Aer Lingus Booking Confirmation Email</span></h3><p class="cats"><span>Accessibility, UX</span></p></a></li>
+        <li class="tile"><img src="images/conversion.png" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/conversion-designer/"><h3><span>Conversion Optimisation</span></h3><p class="cats"><span>Conversion Design, Optimisation</span></p></a></li>
+        <li class="tile"><img src="images/booking-flow.jpg" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/aer-lingus-booking-flow"><h3><span>Aer Lingus Booking Flow</span></h3><p class="cats"><span>Accessibility, Conversion Design, Product Design</span></p></a></li>
+        <li class="tile"><img src="images/iconography.png" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/aer-lingus-iconography/"><h3><span>Aer Lingus Iconography</span></h3><p class="cats"><span>Branding, UI Design, Web Design</span></p></a></li>
+        <li class="tile"><img src="images/accessibility.png" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/accessibility-design/"><h3><span>Designing for Accessibility</span></h3><p class="cats"><span>Accessibility, UX, Web Design</span></p></a></li>
+        <li class="tile"><img src="images/bohemian-fc.jpg" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/bohemianfc/"><h3><span>Bohemian FC</span></h3><p class="cats"><span>Graphic Design, Web Design</span></p></a></li>
+        <li class="tile"><img src="images/brand-identity.gif" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/design/"><h3><span>Brand Identity</span></h3><p class="cats"><span>Branding, SME, UX</span></p></a></li>
+        <li class="tile"><img src="images/design-process.jpg" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/process/"><h3><span>UX/UI Design Process</span></h3><p class="cats"><span>UI Design, UX</span></p></a></li>
+        <li class="tile"><img src="images/cock-tavern.png" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/cock_tavern/"><h3><span>The Cock Tavern</span></h3><p class="cats"><span>Branding, SME, Web Design</span></p></a></li>
+        <li class="tile"><img src="images/print-design.png" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/design/"><h3><span>Print Design</span></h3><p class="cats"><span>Illustration, Print</span></p></a></li>
+        <li class="tile rise"><img src="images/seat-selection.png" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/aer-lingus-seat-selection/"><h3><span>Aer Lingus Seat Selection</span></h3><p class="cats"><span>Accessibility, UI Design, UX</span></p></a></li>
+        <li class="tile rise"><img src="images/vanplus.jpg" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/design/"><h3><span>Vanplus Insurance +</span></h3><p class="cats"><span>Branding, Web Design</span></p></a></li>
+        <li class="tile rise"><img src="images/personal-projects.png" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/design/"><h3><span>Personal Projects</span></h3><p class="cats"><span>Branding, Print, Web Design</span></p></a></li>
+        <li class="tile rise"><img src="images/artworks.jpg" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/design/"><h3><span>Artworks</span></h3><p class="cats"><span>Illustration</span></p></a></li>
+        <li class="tile rise"><img src="images/search-results.jpg" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/flight-search-results/"><h3><span>Aer Lingus Search Results</span></h3><p class="cats"><span>Conversion Design, Optimisation, Product Design</span></p></a></li>
+        <li class="tile rise"><img src="images/boarding-pass.jpg" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/boarding-pass-design/"><h3><span>Aer Lingus Boarding Pass 2024</span></h3><p class="cats"><span>Product Design, UX Strategy</span></p></a></li>
+        <li class="tile rise"><img src="images/moneycube.png" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/moneycube/"><h3><span>Moneycube™ Brand Development</span></h3><p class="cats"><span>Branding</span></p></a></li>
+        <li class="tile rise"><img src="images/sme-branding.gif" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/sme-brand-design/"><h3><span>SME Web &amp; Branding</span></h3><p class="cats"><span>Branding, Illustration, SME</span></p></a></li>
+        <li class="tile rise"><img src="images/covid-response.jpg" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/aer-lingus-covid-response/"><h3><span>COVID Response Projects</span></h3><p class="cats"><span>UI Design, UX</span></p></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="learning" aria-labelledby="learning-title">
+  <div class="wrap section__inner">
+    <h2 class="section__title" id="learning-title">Learning</h2>
+    <div class="learning__card">
+      <ul class="learning__list" id="learning-list">
+        <li class="learning__item" style="--i: 0">
+          <div class="learning__logo"><img src="logos/ux-design-institute-logo.png" alt="UX Design Institute logo" loading="lazy" decoding="async"></div>
+          <div class="learning__text">
+            <h3 class="learning__title">Designing for Accessibility <span class="learning__year">(2025)</span></h3>
+            <p class="learning__institution">UX Design Institute Dublin / Glasgow Caledonian University</p>
+          </div>
+        </li>
+        <li class="learning__item" style="--i: 1">
+          <div class="learning__logo"><img src="logos/stanford-2.png" alt="Stanford University crest" loading="lazy" decoding="async"></div>
+          <div class="learning__text">
+            <h3 class="learning__title">Fintech <span class="learning__year">(2023)</span></h3>
+            <p class="learning__institution">Stanford University, California</p>
+          </div>
+        </li>
+        <li class="learning__item" style="--i: 2">
+          <div class="learning__logo"><img src="logos/curtin-256.png" alt="Curtin University crest" loading="lazy" decoding="async"></div>
+          <div class="learning__text">
+            <h3 class="learning__title">Accessibility, Representation &amp; Inclusion <span class="learning__year">(2020)</span></h3>
+            <p class="learning__institution">Curtin University of Technology, Perth</p>
+          </div>
+        </li>
+        <li class="learning__item" style="--i: 3">
+          <div class="learning__logo"><img src="logos/ux-design-institute-logo.png" alt="UX Design Institute logo" loading="lazy" decoding="async"></div>
+          <div class="learning__text">
+            <h3 class="learning__title">UX Design <span class="learning__year">(2019)</span></h3>
+            <p class="learning__institution">UX Design Institute Dublin / Glasgow Caledonian University</p>
+          </div>
+        </li>
+        <li class="learning__item" style="--i: 4">
+          <div class="learning__logo"><img src="logos/rit-256.png" alt="Rochester Institute of Technology logo" loading="lazy" decoding="async"></div>
+          <div class="learning__text">
+            <h3 class="learning__title">Critical Thinking &amp; Problem Solving <span class="learning__year">(2018)</span></h3>
+            <p class="learning__institution">Rochester Institute of Technology, New York</p>
+          </div>
+        </li>
+        <li class="learning__item" style="--i: 5">
+          <div class="learning__logo"><img src="logos/berkeley-256.png" alt="Berkeley University logo" loading="lazy" decoding="async"></div>
+          <div class="learning__text">
+            <h3 class="learning__title">Blockchain Technology <span class="learning__year">(2018)</span></h3>
+            <p class="learning__institution">Berkeley University, California</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+/* Header: logo flies from centre stage to the docked bar */
+(() => {
+  const root = document.documentElement;
+  const bar = document.getElementById('bar');
+  const logo = document.getElementById('logo');
+  const prompt = document.getElementById('prompt');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const HERO = 64, DOCK = 24, HEADER = 80, S = DOCK / HERO;
+  let geo = null, ticking = false;
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  function measure() {
+    const padX = parseFloat(getComputedStyle(bar).paddingLeft) || 64;
+    const inset = bar.offsetHeight - HEADER;
+    const w = logo.offsetWidth, h = logo.offsetHeight;
+    const vw = root.clientWidth, vh = window.innerHeight;
+    bar.style.setProperty('--slot-w', (w * S) + 'px');
+    geo = { hx: (vw - w) / 2, hy: (vh - h) / 2, dx: padX, dy: inset + (HEADER - h * S) / 2, run: Math.max(1, vh - HEADER) };
+  }
+  function render() {
+    ticking = false;
+    if (!geo) measure();
+    let p = clamp(window.scrollY / geo.run, 0, 1);
+    if (reduce.matches) p = p > 0.35 ? 1 : 0;
+    const e = ease(p);
+    logo.style.transform = `translate3d(${lerp(geo.hx, geo.dx, e)}px, ${lerp(geo.hy, geo.dy, e)}px, 0) scale(${lerp(1, S, e)})`;
+    const ui = clamp((p - 0.7) / 0.3, 0, 1);
+    const fill = clamp((p - 0.85) / 0.15, 0, 1);
+    bar.style.setProperty('--ui', ui.toFixed(3));
+    bar.style.setProperty('--bar', fill.toFixed(3));
+    bar.dataset.docked = ui > 0 ? 'true' : 'false';
+    prompt.style.setProperty('--p', p.toFixed(3));
+    prompt.style.pointerEvents = p > 0.15 ? 'none' : 'auto';
+  }
+  const queue = () => { if (!ticking) { ticking = true; requestAnimationFrame(render); } };
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', () => { geo = null; queue(); });
+  reduce.addEventListener?.('change', queue);
+  document.fonts?.ready.then(() => { geo = null; queue(); });
+  prompt.addEventListener('click', () => {
+    window.scrollTo({ top: geo ? geo.run : innerHeight, behavior: reduce.matches ? 'auto' : 'smooth' });
+  });
+  render();
+})();
+
+/* Hero tabs */
+(() => {
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  const select = (tab, focus) => {
+    tabs.forEach(t => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', on);
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    if (focus) tab.focus();
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => select(t));
+    t.addEventListener('keydown', e => {
+      const map = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 };
+      if (e.key in map) { e.preventDefault(); select(tabs[(map[e.key] + tabs.length) % tabs.length], true); }
+    });
+  });
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.getElementById('hero-mouse').addEventListener('click', () => {
+    document.getElementById('case-studies').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+  });
+})();
+
+/* Work tiles 13+ and Learning rows reveal once in view */
+(() => {
+  if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.documentElement.classList.add('js');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add(e.target.matches('.learning__list') ? 'is-visible' : 'in'); io.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
+  document.querySelectorAll('.tile.rise, .learning__list').forEach(el => io.observe(el));
+})();
+</script>
+<script src="js/hairline-kernel.js"></script>
+<script src="js/case-studies.js"></script>
+<script src="js/stack-reveal.js"></script>
+<script src="js/figures/flights.js"></script>
+<script src="js/figures/phone.js"></script>
+<script src="js/figures/accessibility.js"></script>
+<script src="js/figures/bohs.js"></script>
+</body>
+</html>
