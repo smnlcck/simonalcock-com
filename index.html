@@ -73,8 +73,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 }
 
 /* Section shell + H2 (notes 1: 50px EudoxusSans-Medium) */
-.section { padding-top: 64px; }
-.section:last-child { padding-bottom: 64px; }
+.section { padding-top: 80px; }
+.section:last-child { padding-bottom: 80px; }
 .section__inner { display: grid; gap: 40px; }
 .section__title {
   margin: 0;
@@ -481,8 +481,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
         <a class="case__button" href="https://simonalcock.ie/portfolio/bohemianfc/">View Case Study<span class="sr-only">: Rebuilding Bohemian FC’s web presence</span></a>
       </div>
       <div class="case__panel">
-        <div class="case__stage" data-figure="bohs" data-hairline-theme="light" style="--z: 1; --fx: 195.8; --fy: 165.4" role="img"
-             aria-label="The Bohemian Football Club crest and wordmark, drawn in outline, turning from an isometric view to face the viewer."></div>
+        <div class="case__stage" data-settle style="--z: 1.15; --fx: 200; --fy: 160"></div>
       </div>
     </article>
         </div>
@@ -669,6 +668,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 <script src="js/figures/flights.js"></script>
 <script src="js/figures/phone.js"></script>
 <script src="js/figures/accessibility.js"></script>
-<script src="js/figures/bohs.js"></script>
+<script src="js/figures/settle.js"></script>
+<script>
+/* Settle, from @lucasmarkes/hairline (MIT): mounted on the Bohemian FC card, playing its tour until a pointer arrives */
+document.querySelectorAll('[data-settle]').forEach(el => window.hairlineSettle?.(el, { theme: 'light', play: true }));
+</script>
 </body>
 </html>
