@@ -109,10 +109,9 @@
       [[x0, y0], [x1, y0], [x1, y1], [x0, y1]].forEach(([x, y], j) =>
         handles[j].setAttribute("d", poly(fillet([[x - HS, y - HS], [x + HS, y - HS], [x + HS, y + HS], [x - HS, y + HS]], [0.6, 0.6, 0.6, 0.6], 2))));
 
-      // the bright stroke: the mark at rest; the selection while the turntable is handled or turning
+      // the bright stroke: the mark always; the selection too while the turntable is handled or turning
       const live = lastX !== null || spin.mode !== "rest";
       box.classList.toggle("hi", live); handles.forEach((h) => h.classList.toggle("hi", live));
-      top.classList.toggle("hi", !live); topHead.classList.toggle("hi", !live);
       read.textContent = live ? `${Math.round(x1 - x0)} × ${Math.round(y1 - y0)}` : "rest";
       return m;
     });
