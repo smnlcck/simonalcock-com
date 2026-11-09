@@ -32,7 +32,7 @@ Recreated from the Framer "Cursor-dark" component: a 40px circle, rgba(0,0,0,.7)
 
 All fonts are served from this repo as WOFF2 files in `fonts/` and the two used at first paint are preloaded, so every browser loads them (simonalcock.ie blocks its own copies on other domains: no `Access-Control-Allow-Origin` header).
 
-- **Eudoxus Sans** (SIL Open Font License 1.1; by stijndevries, based on Plus Jakarta Sans by Tokotype): ExtraLight 200, Light 300, Regular 400, Medium 500, ExtraBold 800 as the `"Eudoxus Sans"` family. The page's rules use the Medium cut under the name `"EudoxusSans-Medium"` at weight 400; the bold phrases in the case studies use `"Eudoxus Sans"` at 800. There is no 700 (Bold) file.
+- **Eudoxus Sans** (SIL Open Font License 1.1; by stijndevries, based on Plus Jakarta Sans by Tokotype): ExtraLight 200, Light 300, Regular 400, Medium 500, ExtraBold 800 as the `"Eudoxus Sans"` family. Titles, labels and buttons use the Medium cut under the name `"EudoxusSans-Medium"` at weight 400; body copy uses `"Eudoxus Sans"` Regular (400), and the bold phrases in the case studies use Medium (500). There is no 700 (Bold) file.
 - **Aeonik Fono** (commercial, CoType Foundry), used for the `.simon` logo. This repo is public, so check its licence allows web embedding from here.
 
 ## Licences

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preload" href="fonts/EudoxusSans-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/AeonikFono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/EudoxusSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <title>simonalcock.com</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Simon Alcock, Product Designer in Dublin: case studies, work and learning.">
@@ -37,7 +38,7 @@
   --important: #65affe;
 
   --font-display: "EudoxusSans-Medium", Helvetica, Arial, sans-serif;
-  --font-body: "EudoxusSans-Medium", Helvetica, Arial, sans-serif;   /* same face as the titles */
+  --font-body: "Eudoxus Sans", Helvetica, Arial, sans-serif;   /* Regular (400) for body copy; titles use the Medium cut */
   --font-fono: "AeonikFono-Regular", "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --font-mono: Consolas, "Liberation Mono", Courier, monospace;
   --ease-theme: cubic-bezier(0.37, 0.31, 0.2, 0.85);
@@ -261,7 +262,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 .case__title { margin: -4px 0 0; color: var(--title); font: 400 26px/34px var(--font-display); text-wrap: balance; }
 .case__body p { margin: 0; text-wrap: pretty; }
 .case__body p + p { margin-top: 20px; }
-.case__body strong { color: var(--title); font-family: "Eudoxus Sans", var(--font-body); font-weight: 800; }   /* real ExtraBold cut */
+.case__body strong { color: var(--title); font-weight: 500; }   /* Eudoxus Sans Medium */
 .case__body a { color: var(--title); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
 .case__body a:hover { text-decoration-thickness: 2px; }
 .case__button {
