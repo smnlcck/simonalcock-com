@@ -173,9 +173,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 .hero {
   position: relative;
   display: flex; justify-content: center; align-items: flex-start;
-  margin-inline: var(--frame);
-  min-height: calc(100vh - var(--header-h) - var(--frame));
-  min-height: calc(100svh - var(--header-h) - var(--frame));
+  margin: var(--frame) var(--frame) 0;   /* same inset on top as on the sides */
+  min-height: calc(100vh - var(--header-h) - 2 * var(--frame));
+  min-height: calc(100svh - var(--header-h) - 2 * var(--frame));
   background: var(--surface) url("images/simon-alcock-profile-image-wide.jpg") center center / cover no-repeat;
   border-radius: 30px;
 }
