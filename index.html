@@ -136,7 +136,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 
 .logo {
   position: fixed; top: 0; left: 0; z-index: 11;
-  font: 400 50px/1 var(--font-fono); letter-spacing: -0.01em;
+  font: 400 80px/1 var(--font-fono); letter-spacing: -0.01em;
   color: var(--title); text-decoration: none; white-space: nowrap;
   transform-origin: 0 0; will-change: transform;
 }
@@ -144,7 +144,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 .stage { height: 100vh; height: 100svh; position: relative; }
 /* TechText wordmark (ported from the Framer component) fills the intro screen at rest; it hands
    over to the travelling .logo as soon as scrolling starts. */
-.techtext { position: absolute; inset: 0; z-index: 1; color: var(--title); }
+.techtext { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100svh; z-index: 1; color: var(--title); }
 .prompt { z-index: 2; }
 .prompt {
   position: absolute; left: 50%; bottom: max(32px, env(safe-area-inset-bottom, 0px));
@@ -629,18 +629,20 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
   const logo = document.getElementById('logo');
   const prompt = document.getElementById('prompt');
   const tech = window.TechText ? document.getElementById('techtext') : null;
+  let techText = null, techOn = true;
+  const TECH_FX = { sweep: true, selection: true, reveal: 'letter' };
   if (tech) {
     // Settings from the Framer "Tech Text" instance; type matched to the site's logo
-    window.TechText.mount(tech, {
+    techText = window.TechText.mount(tech, {
       text: '.simon', fontFamily: '"AeonikFono-Regular", "DM Mono", ui-monospace, monospace', fontWeight: 400,
-      fontSize: 50, letterSpacing: -0.01, align: 'center', color: '#333333', accentColor: 'rgb(0, 187, 255)',
+      fontSize: 80, letterSpacing: -0.01, align: 'center', color: '#333333', accentColor: 'rgb(0, 187, 255)',
       reveal: 'letter', lineStyle: 'dashed', dashLength: 4, dashGap: 2, strokeWidth: 1.5, specks: 15,
       selection: true, labels: true, draggable: true, bounce: 0.4, clickKick: true, intro: 'none', sweep: true, speed: 1,
     });
     tech.setAttribute('aria-hidden', 'true'); tech.removeAttribute('role'); tech.removeAttribute('aria-label');
   }
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-  const HERO = 50, DOCK = 24, HEADER = 80, S = DOCK / HERO;
+  const HERO = 80, DOCK = 24, HEADER = 80, S = DOCK / HERO;
   let geo = null, ticking = false;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
@@ -675,7 +677,14 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
     const handoff = clamp(p / 0.06, 0, 1);
     logo.style.opacity = handoff.toFixed(3);
     logo.style.pointerEvents = handoff > 0.5 ? '' : 'none';
-    if (tech) { tech.style.opacity = (1 - handoff).toFixed(3); tech.style.visibility = handoff >= 1 ? 'hidden' : ''; }
+    if (tech) {
+      // Effects run only on the intro screen: they switch off as soon as the logo starts moving,
+      // and the canvas is removed from layout once the hand-over is done (which also stops its animation loop)
+      const atRest = p === 0;
+      if (atRest !== techOn) { techOn = atRest; techText.update(atRest ? TECH_FX : { sweep: false, selection: false, reveal: 'off' }); }
+      tech.style.opacity = (1 - handoff).toFixed(3);
+      tech.style.display = handoff >= 1 ? 'none' : '';
+    }
     prompt.style.setProperty('--p', p.toFixed(3));
     prompt.style.pointerEvents = p > 0.15 ? 'none' : 'auto';
   }

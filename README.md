@@ -21,7 +21,7 @@ Homepage for simonalcock.com, combining the approved section components into one
 
 ## Intro wordmark (TechText)
 
-The intro screen shows `.simon` at 50px as a TechText canvas, ported from the Framer "Tech Text" code component (React Bits) to plain JavaScript. Source: `src/techtext.ts`; built to `js/techtext.js` with `npx esbuild src/techtext.ts --bundle --format=iife --minify --outfile=js/techtext.js`. Letters turn to dashed outlines under the pointer with a selection frame, specks and size labels; an idle sweep runs when the pointer is away; letters can be dragged or clicked and spring back. When scrolling starts, the canvas hands over to the DOM logo, which flies up and docks in the header.
+The intro screen shows `.simon` at 80px as a TechText canvas, ported from the Framer "Tech Text" code component (React Bits) to plain JavaScript. Source: `src/techtext.ts`; built to `js/techtext.js` with `npx esbuild src/techtext.ts --bundle --format=iife --minify --outfile=js/techtext.js`. Letters turn to dashed outlines under the pointer with a selection frame, specks and size labels; an idle sweep runs when the pointer is away; letters can be dragged or clicked and spring back. When scrolling starts, the effects switch off and the canvas (pinned in place) fades into the DOM logo, which flies up and docks in the header with no effects.
 
 ## Custom cursor
 
