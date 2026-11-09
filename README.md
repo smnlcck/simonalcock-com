@@ -32,7 +32,7 @@ Recreated from the Framer "Cursor-dark" component: a 40px circle, rgba(0,0,0,.7)
 
 EudoxusSans-Medium and AeonikFono-Regular are served from this repo as WOFF2 files in `fonts/` (converted from the originals on simonalcock.ie) and preloaded in the page head. Because they come from the same site as the page, every browser loads them. The simonalcock.ie copies remain as a second source in each `@font-face`; on their own they are blocked on other domains, because simonalcock.ie does not send an `Access-Control-Allow-Origin` header.
 
-These are licensed fonts and this repo is public, so the font files can be downloaded by anyone. Check the licences allow web embedding.
+Eudoxus Sans is free under the SIL Open Font License 1.1 (by stijndevries, based on Plus Jakarta Sans by Tokotype), so hosting it here is fine. Aeonik Fono is a commercial CoType Foundry font: this repo is public, so check its licence allows web embedding from here.
 
 ## Licences
 
