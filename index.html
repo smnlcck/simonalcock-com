@@ -174,10 +174,22 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 }
 
 /* ================= Hero (hero-existing) ================= */
+/* Scroll-stop: once the hero reaches the docked header it stays pinned (with the header) for
+   --hold of scrolling, like the case-studies deck, then the page moves on. A soft snap point
+   at the start of the hold makes a scroll that ends nearby settle exactly there. */
+:root { --hold: 30vh; }
+html { scroll-snap-type: y proximity; }
+.hero-hold {
+  padding-top: var(--frame);
+  scroll-snap-align: start;
+  scroll-margin-top: var(--header-h);
+}
+.hero-hold > .hero { position: sticky; top: calc(var(--header-h) + var(--frame)); }
+.hero-hold::after { content: ""; display: block; height: var(--hold); }   /* scroll distance of the stop */
 .hero {
   position: relative;
   display: flex; justify-content: center; align-items: flex-start;
-  margin: var(--frame) var(--frame) 0;   /* same inset on top as on the sides */
+  margin: 0 var(--frame);   /* top inset comes from .hero-hold */
   min-height: calc(100vh - var(--header-h) - 2 * var(--frame));
   min-height: calc(100svh - var(--header-h) - 2 * var(--frame));
   background: var(--surface) url("images/simon-alcock-profile-image-wide.jpg") center center / cover no-repeat;
@@ -422,6 +434,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 </section>
 
 <main>
+<div class="hero-hold">
 <section class="hero" id="about" aria-label="Introduction">
   <div class="hero__col">
     <div class="tabs">
@@ -461,6 +474,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
   </div>
   <button class="hero__mouse" id="hero-mouse" type="button" aria-label="Scroll to case studies"><span></span></button>
 </section>
+</div>
 
 <section class="section" id="case-studies" aria-labelledby="case-studies-title">
   <div class="wrap section__inner">
@@ -654,7 +668,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
     const w = logo.offsetWidth, h = logo.offsetHeight;
     const vw = root.clientWidth, vh = window.innerHeight;
     bar.style.setProperty('--slot-w', (w * S) + 'px');
-    geo = { hx: (vw - w) / 2, hy: (vh - h) / 2, dx: padX, dy: inset + (HEADER - h * S) / 2, run: Math.max(1, vh - HEADER) };
+    const hold = parseFloat(getComputedStyle(document.querySelector('.hero-hold'), '::after').height) || 0;
+    geo = { hx: (vw - w) / 2, hy: (vh - h) / 2, dx: padX, dy: inset + (HEADER - h * S) / 2, run: Math.max(1, vh - HEADER), hold };
   }
   function render() {
     ticking = false;
@@ -663,10 +678,12 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
     if (reduce.matches) p = p > 0.35 ? 1 : 0;
     const e = ease(p);
     // Once docked, the bar and logo stop being fixed and scroll off with the page
-    const parked = window.scrollY >= geo.run;
+    // The header stays fixed through the hero's scroll-stop, then parks and scrolls away
+    const parkAt = geo.run + geo.hold;
+    const parked = window.scrollY >= parkAt;
     root.classList.toggle('is-parked', parked);
-    root.style.setProperty('--run', geo.run + 'px');
-    const y = parked ? geo.run + geo.dy : lerp(geo.hy, geo.dy, e);
+    root.style.setProperty('--run', parkAt + 'px');
+    const y = parked ? parkAt + geo.dy : lerp(geo.hy, geo.dy, e);
     logo.style.transform = `translate3d(${lerp(geo.hx, geo.dx, e)}px, ${y}px, 0) scale(${lerp(1, S, e)})`;
     const ui = clamp((p - 0.7) / 0.3, 0, 1);
     const fill = clamp((p - 0.85) / 0.15, 0, 1);

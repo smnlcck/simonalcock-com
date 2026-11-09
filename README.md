@@ -15,6 +15,7 @@ Homepage for simonalcock.com, combining the approved section components into one
 - All sections share one column width, so headings line up with the hero text.
 - The hero's fixed 25px frame became a 25px inset around the hero card, including the top, so it sits 25px below the docked header.
 - The header is fixed only while the logo travels to its docked position; after that it scrolls off with the page.
+- Scroll-stop: when the hero reaches the docked header, both stay pinned for 30vh of scrolling (`--hold`), with a soft snap at the start, then scroll away together.
 - Sections are 80px apart. The case-studies deck pins a card-sized box centred in the window, so it keeps that spacing.
 - Work tile titles are H3s.
 - The Bohemian FC card uses the Settle figure from `@lucasmarkes/hairline` (v0.5.1), bundled on its own as `js/figures/settle.js` and mounted without React.
