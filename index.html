@@ -3,13 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preload" href="fonts/EudoxusSans-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/AeonikFono-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <title>simonalcock.com</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Simon Alcock, Product Designer in Dublin: case studies, work and learning.">
 <style>
-/* Licensed fonts, loaded from simonalcock.ie (not stored in this repo) */
-@font-face { font-family: "EudoxusSans-Medium"; src: url("https://simonalcock.ie/wp-content/uploads/custom_fonts/EudoxusSans-Medium.ttf") format("truetype"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "AeonikFono-Regular"; src: url("https://simonalcock.ie/wp-content/uploads/custom_fonts/AeonikFono-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+/* Fonts served from this repo as WOFF2 (same origin, so every browser loads them); simonalcock.ie is the fallback */
+@font-face { font-family: "EudoxusSans-Medium"; src: url("fonts/EudoxusSans-Medium.woff2") format("woff2"), url("https://simonalcock.ie/wp-content/uploads/custom_fonts/EudoxusSans-Medium.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "AeonikFono-Regular"; src: url("fonts/AeonikFono-Regular.woff2") format("woff2"), url("https://simonalcock.ie/wp-content/uploads/custom_fonts/AeonikFono-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
 
 /* Layout: full-screen logo stage → logo docks into an 80px fixed bar; hero card with role tabs;
    then Case studies (scroll-stack deck), Work (masonry-free 3/2/1 grid) and Learning, each under
