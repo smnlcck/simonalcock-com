@@ -200,6 +200,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 .tab:focus-visible { border-color: var(--ink-40); }
 .tab[aria-selected="true"] { background: var(--surface); cursor: default; }
 .panel { padding: 14px 0; overflow: hidden; min-height: 10px; }
+/* All panels share one grid cell, so the hero is always as tall as the longest one.
+   Inactive panels keep their space but are invisible and hidden from assistive tech. */
+.panels { display: grid; }
+.panels > .panel { grid-area: 1 / 1; }
+.panels > .panel[hidden] { display: block !important; visibility: hidden; }
 .panel h1, .panel .css {
   margin: 0; color: var(--title);
   font-family: var(--font-display); font-size: 50px; line-height: 60px; font-weight: 400;
@@ -394,6 +399,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
         <li class="tabs__item" role="presentation"><button class="tab" role="tab" id="tab-developers" aria-controls="developers" aria-selected="false" tabindex="-1">For Developers</button></li>
       </ul>
     </div>
+    <div class="panels">
     <div class="panel" role="tabpanel" id="everyone" aria-labelledby="tab-everyone">
       <h1>I’m a Product Designer from Dublin with over 12 years experience and a background in financial services, brand, web &amp; graphic design. Now specialising in conversion optimisation, accessibility compliance and governance of a visual &amp; behavioural consistency.</h1>
     </div>
@@ -416,6 +422,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
         <span class="decl" aria-hidden="true">results: delivered <span class="important">!important</span>;</span>
         <span aria-hidden="true">}</span>
       </p>
+    </div>
     </div>
   </div>
   <button class="hero__mouse" id="hero-mouse" type="button" aria-label="Scroll to case studies"><span></span></button>
