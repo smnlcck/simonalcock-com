@@ -19,6 +19,10 @@ Homepage for simonalcock.com, combining the approved section components into one
 - Work tile titles are H3s.
 - The Bohemian FC card uses the Settle figure from `@lucasmarkes/hairline` (v0.5.1), bundled on its own as `js/figures/settle.js` and mounted without React.
 
+## Intro wordmark (TechText)
+
+The intro screen shows `.simon` at 50px as a TechText canvas, ported from the Framer "Tech Text" code component (React Bits) to plain JavaScript. Source: `src/techtext.ts`; built to `js/techtext.js` with `npx esbuild src/techtext.ts --bundle --format=iife --minify --outfile=js/techtext.js`. Letters turn to dashed outlines under the pointer with a selection frame, specks and size labels; an idle sweep runs when the pointer is away; letters can be dragged or clicked and spring back. When scrolling starts, the canvas hands over to the DOM logo, which flies up and docks in the header.
+
 ## Custom cursor
 
 Recreated from the Framer "Cursor-dark" component: a 40px circle, rgba(0,0,0,.7) at 40% opacity, that shrinks to 32px at full opacity while pressed (spring, bounce .2, .4s). It only appears on devices with a mouse or trackpad; touch screens are unchanged.
