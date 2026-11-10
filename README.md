@@ -18,7 +18,7 @@ Homepage for simonalcock.com, combining the approved section components into one
 - Scroll-stop: when the hero reaches the docked header, both stay pinned for 30vh of scrolling (`--hold`), then scroll away together. A downward scroll that comes to rest just above the stop glides into place (0.8s ease-in-out); any user input cancels the glide.
 - Sections are 80px apart. The case-studies deck pins a card-sized box centred in the window, so it keeps that spacing.
 - Work tile titles are H3s.
-- The Bohemian FC card uses the Settle figure from `@lucasmarkes/hairline` (v0.5.1), bundled on its own as `js/figures/settle.js` and mounted without React. It is patched so that, after the camera is fitted to the original layout (same scale as the package), any tile whose starting position would fall outside the card image (outside svg x 30–370 at `--z: 1.15`) is pulled toward the hub until it fits; every other tile, and the settled tree, is unchanged.
+- The Bohemian FC card uses the Settle figure from `@lucasmarkes/hairline` (v0.5.1), bundled on its own as `js/figures/settle.js` and mounted without React. It is patched so that, after the camera is fitted to the original layout (same scale as the package), any tile whose starting position would fall outside the card image (outside svg x 52–348 at `--z: 1.15`, about 35px clear at desktop size even while the tour plays) is pulled toward the hub until it fits; every other tile, and the settled tree, is unchanged.
 
 ## Intro wordmark (TechText)
 
@@ -27,6 +27,10 @@ The intro screen shows `.simon` at 80px as a TechText canvas, ported from the Fr
 ## Custom cursor
 
 Recreated from the Framer "Cursor-dark" component: a 40px circle, rgba(0,0,0,.7) at 40% opacity, that shrinks to 32px at full opacity while pressed (spring, bounce .2, .4s). It only appears on devices with a mouse or trackpad; touch screens are unchanged.
+
+## Caching
+
+Script links carry a `?v=` content hash (added at build time), so browsers fetch a changed script straight away instead of using a cached copy.
 
 ## Fonts
 
