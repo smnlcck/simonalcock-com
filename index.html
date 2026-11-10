@@ -345,6 +345,33 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 .cta__inner { display: flex; justify-content: center; }
 .cta__button { margin-top: 0; }
 
+/* ================= Skills and Values (from simonalcock.ie) ================= */
+/* One white card, three groups of three columns; a short centred rule between groups. Type follows the
+   case-study cards: group headings at the case-title size, item titles at the Learning-title size. */
+.skills__card { padding: 60px 48px; background: var(--surface); border-radius: 28px; display: grid; gap: 0; }
+.skills__group { display: grid; gap: 32px; }
+.skills__group + .skills__group { margin-top: 56px; padding-top: 56px; position: relative; }
+.skills__group + .skills__group::before {
+  content: ""; position: absolute; top: 0; left: 25%; right: 25%; height: 1px; background: var(--rule);
+}
+.skills__heading { margin: 0; color: var(--title); font: 400 26px/34px var(--font-display); text-wrap: balance; }
+.skills__cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 32px; }
+.skills__item { display: grid; align-content: start; gap: 14px; min-width: 0; }
+.skills__title { margin: 0; color: var(--title); font: 400 22px/30px var(--font-display); }
+.skills__item p { margin: 0; text-wrap: pretty; }
+.skills__item p + p, .skills__item p + ul { margin-top: 6px; }
+.skills__item em { font-style: italic; }
+.skills__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.skills__list li::before { content: "·"; margin-right: 8px; color: var(--title); }
+@media (max-width: 880px) {
+  .skills__card { padding: 40px 24px; border-radius: 22px; }
+  .skills__cols { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .skills__group + .skills__group { margin-top: 40px; padding-top: 40px; }
+  .skills__group + .skills__group::before { left: 0; right: 0; }
+  .skills__heading { font-size: 23px; line-height: 30px; }
+  .skills__title { font-size: 20px; line-height: 26px; }
+}
+
 /* ================= Learning (learning-existing) ================= */
 .learning__card { padding: 60px 44px; background: var(--surface); border-radius: 28px; }   /* +16px top and bottom */
 .learning__list { list-style: none; margin: 0; padding: 0; }
@@ -586,6 +613,38 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
         <li class="tile rise"><img src="images/sme-branding.gif" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/sme-brand-design/"><h3><span>SME Web &amp; Branding</span></h3><p class="cats"><span>Branding, Illustration, SME</span></p></a></li>
         <li class="tile rise"><img src="images/covid-response.jpg" alt="" loading="lazy" decoding="async"><a href="https://simonalcock.ie/portfolio/aer-lingus-covid-response/"><h3><span>COVID Response Projects</span></h3><p class="cats"><span>UI Design, UX</span></p></a></li>
       </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="skills" aria-labelledby="skills-title">
+  <div class="wrap section__inner">
+    <h2 class="section__title" id="skills-title">Skills and Values</h2>
+    <div class="skills__card">
+        <section class="skills__group" aria-labelledby="skills-g0">
+          <h3 class="skills__heading" id="skills-g0">Design Leadership</h3>
+          <div class="skills__cols">
+            <div class="skills__item"><h4 class="skills__title">Experience</h4><p>I combine over 15 years of experience with UX strategy, product and content design to craft distinctive customer experiences that engage, guide and incentivise users.</p></div>
+            <div class="skills__item"><h4 class="skills__title">Vision &amp; Strategy</h4><p>Vision is <em>where we want to be</em>. Strategy is <em>how we get there</em>. Plotting the course to desired results can be as important as the design itself. I see a bigger picture and think tactically.</p></div>
+            <div class="skills__item"><h4 class="skills__title">Collaboration</h4><p>Design is a team sport. I collaborate with UX researchers, fellow designers, subject matter experts and company decision-makers to drive projects and ensure digital products meet UX and business goals.</p></div>
+          </div>
+        </section>
+        <section class="skills__group" aria-labelledby="skills-g1">
+          <h3 class="skills__heading" id="skills-g1">Product Design</h3>
+          <div class="skills__cols">
+            <div class="skills__item"><h4 class="skills__title">Research</h4><p>I use data-driven UX methodologies and evidence-based approaches to inform decision making and produce more targeted and relevant products.</p></div>
+            <div class="skills__item"><h4 class="skills__title">Commercial Awareness</h4><p>By understanding user needs, metrics that matter and behavioral economics, combined with extensive experience in enhancing and testing digital products, I design solutions that consistently deliver positive results.</p></div>
+            <div class="skills__item"><h4 class="skills__title">Brand &amp; Marketing</h4><p>I’ve helped dozens of businesses to build comprehensive, thoughtful and strategy-driven brand identities.</p></div>
+          </div>
+        </section>
+        <section class="skills__group" aria-labelledby="skills-g2">
+          <h3 class="skills__heading" id="skills-g2">Design Standards</h3>
+          <div class="skills__cols">
+            <div class="skills__item"><h4 class="skills__title">Design style</h4><p>I take great pride in the quality of design outputs and strive to produce work that is:</p><ul class="skills__list"><li>Useful</li><li>Considered</li><li>Elegant</li><li>Intentional</li><li>Well made</li></ul></div>
+            <div class="skills__item"><h4 class="skills__title">Accessibility</h4><p>We have a moral and legal responsibility to avoid excluding anyone from our products.</p><p>I’ve worked on complying with U.S. accessibility standards since 2017. I’m an expert in producing inclusive content.</p></div>
+            <div class="skills__item"><h4 class="skills__title">Design Systems</h4><p>I’m a systems thinker and I’m fluent in design softwares such as Figma &amp; Adobe Suite.</p><p>I’ve created and contributed to multiple design and content systems over the last 10 years to ensure consistency at scale.</p></div>
+          </div>
+        </section>
     </div>
   </div>
 </section>

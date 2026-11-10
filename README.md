@@ -6,7 +6,9 @@ Homepage for simonalcock.com, combining the approved section components into one
 2. Hero: [hero-hero-existing](https://github.com/smnlcck/hero-hero-existing), with the five role tabs.
 3. Case studies: [case-studies](https://github.com/smnlcck/case-studies), a scroll-stack deck with Hairline figures.
 4. Work: [works-existing](https://github.com/smnlcck/works-existing), the 3/2/1-column grid.
-5. Learning: [learning-learning-existing](https://github.com/smnlcck/learning-learning-existing), converted from React to plain HTML/JS.
+5. Skills and Values: recreated from the simonalcock.ie homepage as plain HTML/CSS (three groups of three, in one card).
+6. Learning: [learning-learning-existing](https://github.com/smnlcck/learning-learning-existing), converted from React to plain HTML/JS.
+7. Get in touch: a button linking to simonalcock.ie/contact/.
 
 ## Changes from the individual components
 
