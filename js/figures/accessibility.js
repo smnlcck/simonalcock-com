@@ -60,10 +60,11 @@
     const g = mk("g", {}, svg);
     const platter = solid(g), ticks = mk("path", { class: "nf lo" }, g), major = mk("path", { class: "nf" }, g);
     const index = mk("path", { class: "nf" }, g);
-    // compass letters on the four long ticks; they ride round with the turntable but stay upright
+    // compass letters on the four long ticks, printed flat on the turntable: each one's top faces the centre
     const compass = [0, 90, 180, 270].map((d) => {
       const t = mk("text", { "text-anchor": "middle", "dominant-baseline": "central" }, g);
-      t.style.cssText = "fill:var(--hl-edge);stroke:none;font:400 8.5px var(--font-fono, ui-monospace, monospace);letter-spacing:0";
+      t.style.cssText = "fill:var(--hl-edge);stroke:none;font:400 8px var(--font-fono, ui-monospace, monospace);letter-spacing:0";
+      t.setAttribute("x", 0); t.setAttribute("y", 0);
       return { d, t };
     });
     let named = false;
@@ -99,8 +100,15 @@
         named = true;
       }
       for (const c of compass) {
-        const q = P(Math.cos(rad(c.d)) * CR, Math.sin(rad(c.d)) * CR, 0);
-        c.t.setAttribute("x", r2(q[0])); c.t.setAttribute("y", r2(q[1]));
+        // map the letter's own axes onto the floor: x along the rim (tangent), y down = toward the rim, so each
+        // letter's top faces the centre and the ones nearest the viewer read the right way up
+        const ca = Math.cos(rad(c.d)), sa = Math.sin(rad(c.d)), fx = ca * CR, fy = sa * CR;
+        const o = P(fx, fy, 0), alongX = P(fx + 1, fy, 0), alongY = P(fx, fy + 1, 0);
+        const ex = [alongX[0] - o[0], alongX[1] - o[1]], ey = [alongY[0] - o[0], alongY[1] - o[1]];
+        const J = (u, v) => [ex[0] * u + ey[0] * v, ex[1] * u + ey[1] * v];
+        let tx = J(-sa, ca); const dn = J(ca, sa);
+        if (tx[0] * dn[1] - tx[1] * dn[0] < 0) tx = [-tx[0], -tx[1]];   // never mirrored
+        c.t.setAttribute("transform", `matrix(${[tx[0], tx[1], dn[0], dn[1], o[0], o[1]].map((v) => +v.toFixed(3)).join(" ")})`);
       }
       const bottom = C.oy + PR * C.S * C.k + PT * C.S * zf;
       index.setAttribute("d", `M${C.ox - 4} ${r2(bottom + 10)}L${C.ox} ${r2(bottom + 4)}L${C.ox + 4} ${r2(bottom + 10)}`);
