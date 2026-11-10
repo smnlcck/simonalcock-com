@@ -185,7 +185,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 /* Scroll-stop: once the hero reaches the docked header it stays pinned (with the header) for
    --hold of scrolling, like the case-studies deck, then the page moves on. A downward scroll that
    comes to rest just above the stop glides the rest of the way (eased, in script below). */
-:root { --hold: 30vh; }
+:root { --hold: 0px; }   /* no pinned hold: the firm pause below happens with the card at the top of the screen */
 .hero-hold { padding-top: var(--frame); }
 .hero-hold > .hero { position: sticky; top: calc(var(--header-h) + var(--frame)); }
 .hero-hold::after { content: ""; display: block; height: var(--hold); }   /* scroll distance of the stop */
@@ -748,38 +748,68 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
   root.addEventListener('mouseleave', () => c.classList.remove('is-on'));
 })();
 
-/* Hero settle: a downward scroll that stops within the last stretch before the hero's scroll-stop
-   glides into place (0.8s ease-in-out) instead of snapping. Any user input cancels the glide. */
+/* Hero pause: when the white hero card's top edge reaches the top of the screen while scrolling down,
+   the page stops there for at least 0.6s; wheel/trackpad momentum is absorbed until it dies away (1.6s at most), so
+   the visitor has to scroll again to move on. A downward scroll that comes to rest just above the
+   point glides into place (0.8s ease-in-out). Nav links and the scroll buttons pass straight through. */
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-  const DURATION = 800, ZONE = 0.3;            // ms; how far above the stop (share of window height) it catches
+  const hero = document.getElementById('about');
+  const DURATION = 800, ZONE = 0.3, QUIET = 200, MIN_LOCK = 600, MAX_LOCK = 1600;   // ms
   const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+  const stopAt = () => Math.round(hero.getBoundingClientRect().top + scrollY);
   let lastY = scrollY, down = false, idle = 0, anim = 0, gliding = false;
-  const stopAt = () => innerHeight - 80;       // where the hero meets the docked header (header run)
-  const cancel = () => { if (anim) cancelAnimationFrame(anim); anim = 0; gliding = false; };
+  let armed = scrollY < stopAt() - 2, locked = false, lockStart = 0, lastInput = 0, bypassUntil = 0;
+  const cancelGlide = () => { if (anim) cancelAnimationFrame(anim); anim = 0; gliding = false; };
   function glide(to) {
-    const from = scrollY, dist = to - from, t0 = performance.now();
     if (reduce.matches) { scrollTo({ top: to, behavior: 'instant' }); return; }
+    const from = scrollY, dist = to - from, t0 = performance.now();
     gliding = true;
     const step = now => {
       const t = Math.min(1, (now - t0) / DURATION);
       scrollTo({ top: from + dist * ease(t), behavior: 'instant' });
-      if (t < 1 && gliding) anim = requestAnimationFrame(step); else cancel();
+      if (t < 1 && gliding) anim = requestAnimationFrame(step); else cancelGlide();
     };
     anim = requestAnimationFrame(step);
   }
-  function settle() {
-    idle = 0;
-    if (gliding || !down) return;
-    const to = stopAt(), y = scrollY;
-    if (y < to && y > to - innerHeight * ZONE) glide(to);
+  function lock(at) {
+    locked = true; armed = false; lockStart = lastInput = performance.now();
+    scrollTo({ top: at, behavior: 'instant' });
+    const check = () => {
+      const now = performance.now();
+      if ((now - lockStart > MIN_LOCK && now - lastInput > QUIET) || now - lockStart > MAX_LOCK) { locked = false; return; }
+      requestAnimationFrame(check);
+    };
+    requestAnimationFrame(check);
   }
   addEventListener('scroll', () => {
-    if (gliding) return;
-    const y = scrollY; down = y > lastY; lastY = y;
-    clearTimeout(idle); idle = setTimeout(settle, 140);
+    const y = scrollY, s = stopAt();
+    if (locked) { if (y !== s) scrollTo({ top: s, behavior: 'instant' }); return; }
+    if (gliding) { lastY = y; return; }
+    down = y > lastY;
+    if (y < s - 40) armed = true;                      // re-arm once the visitor is back above it
+    if (armed && down && lastY < s && y >= s && performance.now() > bypassUntil) { lastY = s; lock(s); return; }
+    lastY = y;
+    clearTimeout(idle);
+    idle = setTimeout(() => {
+      if (gliding || !down || !armed || performance.now() < bypassUntil) return;
+      const p = scrollY, t = stopAt();
+      if (p < t && p > t - innerHeight * ZONE) { armed = false; glide(t); }
+    }, 140);
   }, { passive: true });
-  for (const type of ['wheel', 'touchstart', 'keydown', 'pointerdown']) addEventListener(type, cancel, { passive: true });
+  // While paused, swallow scroll input; any input also cancels a glide
+  const swallow = e => { lastInput = performance.now(); if (locked && e.cancelable) e.preventDefault(); };
+  addEventListener('wheel', e => { cancelGlide(); swallow(e); }, { passive: false });
+  addEventListener('touchmove', e => { cancelGlide(); swallow(e); }, { passive: false });
+  addEventListener('touchstart', cancelGlide, { passive: true });
+  addEventListener('keydown', e => {
+    cancelGlide();
+    if (['ArrowDown', 'PageDown', ' ', 'End'].includes(e.key)) swallow(e);
+  });
+  // In-page links and the scroll buttons jump straight past the pause
+  document.addEventListener('click', e => {
+    if (e.target.closest('a[href^="#"], #prompt, #hero-mouse')) { bypassUntil = performance.now() + 2500; cancelGlide(); }
+  }, true);
 })();
 
 /* Hero tabs */

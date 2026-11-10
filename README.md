@@ -15,7 +15,7 @@ Homepage for simonalcock.com, combining the approved section components into one
 - All sections share one column width, so headings line up with the hero text.
 - The hero's fixed 25px frame became a 25px inset around the hero card, including the top, so it sits 25px below the docked header.
 - The header is fixed only while the logo travels to its docked position; after that it scrolls off with the page.
-- Scroll-stop: when the hero reaches the docked header, both stay pinned for 30vh of scrolling (`--hold`), then scroll away together. A downward scroll that comes to rest just above the stop glides into place (0.8s ease-in-out); any user input cancels the glide.
+- Hero pause: scrolling down, the page stops when the white hero card's top edge reaches the top of the screen. It holds for at least 0.6s and absorbs wheel/trackpad momentum (1.6s at most), so visitors scroll again to move on. A downward scroll that comes to rest just above the point glides into place (0.8s ease-in-out). Nav links and the scroll buttons pass straight through; the pause re-arms once you scroll back above it.
 - Sections are 80px apart. The case-studies deck pins a card-sized box centred in the window, so it keeps that spacing.
 - Work tile titles are H3s.
 - The Bohemian FC card uses the Settle figure from `@lucasmarkes/hairline` (v0.5.1), bundled on its own as `js/figures/settle.js` and mounted without React. It is patched so that, after the camera is fitted to the original layout (same scale as the package), any tile whose starting position would fall outside the card image (outside svg x 52–348 at `--z: 1.15`, about 35px clear at desktop size even while the tour plays) is pulled toward the hub until it fits; every other tile, and the settled tree, is unchanged.
