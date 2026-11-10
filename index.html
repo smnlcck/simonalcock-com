@@ -313,8 +313,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 @media (min-width: 1025px) { .grid { grid-template-columns: repeat(3, 1fr); } }
 .tile { position: relative; aspect-ratio: 5 / 4; max-width: 100%; overflow: hidden; }
 .tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-/* Experiment: black-and-white tiles. Remove the "work--mono" class from #work to roll back. */
-.work--mono .tile img { filter: grayscale(1); }
 .tile a {
   position: absolute; inset: 0; z-index: 5;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -553,7 +551,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
   </div>
 </section>
 
-<section class="section work--mono" id="work" aria-labelledby="work-title">
+<section class="section" id="work" aria-labelledby="work-title">
   <div class="wrap section__inner">
     <h2 class="section__title" id="work-title">Work</h2>
     <div class="work__card">
