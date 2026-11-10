@@ -111,23 +111,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 .is-parked .bar { position: absolute; top: var(--run, 0px); }
 .is-parked .logo { position: absolute; }
 .logo-slot { width: var(--slot-w, 90px); flex: none; }
-.links {
-  flex: 1 1 auto; min-width: 0;
-  display: flex; justify-content: center; gap: 48px;
-  list-style: none; margin: 0; padding: 0 24px;
-}
-.links a, .contact {
+.contact {
   opacity: var(--ui, 0);
   transform: translateY(calc((1 - var(--ui, 0)) * -8px));
 }
-/* Note 2: header links in EudoxusSans */
-.links a {
-  color: var(--title); text-decoration: none; white-space: nowrap;
-  font: 400 18px/1.2 var(--font-display); letter-spacing: -0.14px;
-  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
-  padding-bottom: 2px; transition: background-size .25s ease;
-}
-.links a:hover, .links a:focus-visible { background-size: 100% 1px; }
 /* Note 2: button label in EudoxusSans, matching the case-study buttons */
 .contact {
   flex: none; display: inline-flex; align-items: center;
@@ -139,7 +126,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 }
 .contact:hover { background: var(--ink); }
 .contact:focus-visible { border-radius: 999px; }
-.bar[data-docked="false"] .links a,
 .bar[data-docked="false"] .contact { visibility: hidden; }
 
 .logo {
@@ -177,7 +163,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
   100% { opacity: 0; }
 }
 @media (max-width: 760px) {
-  .links { display: none; }
   .contact { padding: 10px 18px; font-size: 15px; }
 }
 
@@ -448,14 +433,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 
 <header class="bar" id="bar" data-docked="false">
   <div class="logo-slot" aria-hidden="true"></div>
-  <nav aria-label="Main">
-    <ul class="links">
-      <li><a href="#top">home</a></li>
-      <li><a href="#about">about</a></li>
-      <li><a href="#case-studies">case studies</a></li>
-      <li><a href="#work">work</a></li>
-    </ul>
-  </nav>
   <a class="contact" href="https://simonalcock.ie/contact/">Contact</a>
 </header>
 
@@ -812,7 +789,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 /* Hero pause: when the white hero card's top edge reaches the top of the screen while scrolling down,
    the page stops there for at least 0.6s; wheel/trackpad momentum is absorbed until it dies away (1.6s at most), so
    the visitor has to scroll again to move on. A downward scroll that comes to rest just above the
-   point glides into place (0.8s ease-in-out). Nav links and the scroll buttons pass straight through. */
+   point glides into place (0.8s ease-in-out). In-page links and the scroll buttons pass straight through. */
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const hero = document.getElementById('about');
