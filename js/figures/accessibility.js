@@ -60,6 +60,13 @@
     const g = mk("g", {}, svg);
     const platter = solid(g), ticks = mk("path", { class: "nf lo" }, g), major = mk("path", { class: "nf" }, g);
     const index = mk("path", { class: "nf" }, g);
+    // compass letters on the four long ticks; they ride round with the turntable but stay upright
+    const compass = [0, 90, 180, 270].map((d) => {
+      const t = mk("text", { "text-anchor": "middle", "dominant-baseline": "central" }, g);
+      t.style.cssText = "fill:var(--hl-edge);stroke:none;font:400 8.5px var(--font-fono, ui-monospace, monospace);letter-spacing:0";
+      return { d, t };
+    });
+    let named = false;
     const lipS = lips.map(() => solid(g));
     const coin = mk("g", {}, g);
     const body = mk("path", { class: "sil" }, coin), crease = mk("path", { class: "nf lo" }, coin), field = mk("path", { class: "nf lo" }, coin);
@@ -83,6 +90,18 @@
         (long ? mj : tk).push(seg(P(Math.cos(a) * r0, Math.sin(a) * r0, 0), P(Math.cos(a) * (PR - 4.5), Math.sin(a) * (PR - 4.5), 0)));
       }
       ticks.setAttribute("d", tk.join("")); major.setAttribute("d", mj.join(""));
+      const CR = PR - 15.5;   // just inside the long ticks, clear of the medallion at rest
+      if (!named) {
+        // name them from where they sit at rest: furthest back is N, nearest S, then W and E
+        const at0 = compass.map((c) => ({ c, p: P(Math.cos(rad(c.d)) * CR, Math.sin(rad(c.d)) * CR, 0) }));
+        const byY = at0.slice().sort((a, b) => a.p[1] - b.p[1]), mid = byY.slice(1, 3).sort((a, b) => a.p[0] - b.p[0]);
+        byY[0].c.t.textContent = "N"; byY[3].c.t.textContent = "S"; mid[0].c.t.textContent = "W"; mid[1].c.t.textContent = "E";
+        named = true;
+      }
+      for (const c of compass) {
+        const q = P(Math.cos(rad(c.d)) * CR, Math.sin(rad(c.d)) * CR, 0);
+        c.t.setAttribute("x", r2(q[0])); c.t.setAttribute("y", r2(q[1]));
+      }
       const bottom = C.oy + PR * C.S * C.k + PT * C.S * zf;
       index.setAttribute("d", `M${C.ox - 4} ${r2(bottom + 10)}L${C.ox} ${r2(bottom + 4)}L${C.ox + 4} ${r2(bottom + 10)}`);
 
