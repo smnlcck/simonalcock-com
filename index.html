@@ -230,10 +230,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
 }
 .panel .important { color: var(--important); font-family: var(--font-fono); }
 .panel .selector { color: var(--important); }
-.panel .css { font-family: var(--font-fono); letter-spacing: -0.01em; }   /* "For Developers" reads as code */
+.panel .css { font-family: var(--font-fono); font-size: 52px; letter-spacing: -0.01em; }   /* "For Developers" reads as code; 52px matches Eudoxus at 50px visually */
 .panel .css > span { display: block; }
 .panel .css .decl { padding-left: 1.2em; }
 @media (max-width: 640px) { .panel h1, .panel .css { font-size: 32px; line-height: 40px; } }
+@media (max-width: 640px) { .panel .css { font-size: 33px; } }   /* same 52:50 step up */
 .hero__mouse {
   position: absolute; z-index: 5; left: 50%; bottom: 15px;
   width: 30px; height: 50px; margin-left: -15px; padding: 0;
