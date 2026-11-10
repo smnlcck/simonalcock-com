@@ -337,6 +337,12 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
   .js .tile.rise.in { opacity: 1; transform: none; }
 }
 
+/* ================= Get in touch ================= */
+/* 80px above (the Learning section no longer adds bottom space) and 80px below */
+.cta { padding-block: 80px; }
+.cta__inner { display: flex; justify-content: center; }
+.cta__button { margin-top: 0; }
+
 /* ================= Learning (learning-existing) ================= */
 .learning__card { padding: 60px 44px; background: var(--surface); border-radius: 28px; }   /* +16px top and bottom */
 .learning__list { list-style: none; margin: 0; padding: 0; }
@@ -631,6 +637,12 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--title); outline
         </li>
       </ul>
     </div>
+  </div>
+</section>
+
+<section class="cta" aria-label="Contact">
+  <div class="wrap cta__inner">
+    <a class="case__button cta__button" href="https://simonalcock.ie/contact/">Get in touch</a>
   </div>
 </section>
 </main>
